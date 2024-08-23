@@ -1,10 +1,10 @@
-type User = {
+export type User = {
   name: string;
   password: string;
 };
 
 export default class UserService {
-  static getUser(): User {
+  getUser(): User {
     return { name: "name", password: "password" };
   }
 }

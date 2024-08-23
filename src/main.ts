@@ -1,4 +1,8 @@
 import App from "./app.js";
 
-const server = new App();
-await server.init();
+const bootstrap = async () => {
+  const server = new App();
+  await server.init();
+};
+
+bootstrap();

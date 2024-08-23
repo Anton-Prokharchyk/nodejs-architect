@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "nodejs architect",
   "main": "src/main.ts",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node dist/main.js",
@@ -17,6 +17,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "tslog": "^4.9.3"
   }
 }

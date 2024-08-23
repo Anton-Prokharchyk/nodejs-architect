@@ -1,10 +1,12 @@
-type User = {
-  name: string;
-  password: string;
-};
+import UserService, { User } from "./user.service";
 
-export default class UserService {
-  static getUser(): User {
-    return { name: "name", password: "password" };
+export default class UserController {
+  userService: UserService;
+
+  constructor() {
+    this.userService = new UserService();
+  }
+  public getUser(): User {
+    return this.userService.getUser();
   }
 }
