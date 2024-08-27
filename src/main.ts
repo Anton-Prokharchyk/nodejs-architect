@@ -1,8 +1,17 @@
-import App from "./app.js";
+import App from "./app";
+import UserController from "./user/user.controller";
+import LoggerService from "./logger/logger.service";
+import UserService from "./user/user.service";
 
-const bootstrap = async () => {
-  const server = new App();
-  await server.init();
+const bootstrap = () => {
+  const loggerService: LoggerService = new LoggerService();
+  const userService: UserService = new UserService(loggerService);
+
+  const server = new App(
+    new UserController(userService, loggerService),
+    loggerService,
+  );
+  server.init();
 };
 
 bootstrap();
