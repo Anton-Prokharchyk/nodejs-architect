@@ -1,6 +1,7 @@
 import LoggerService from "../logger/logger.service";
 
 export type User = {
+  id: number;
   name: string;
   password: string;
 };
@@ -10,9 +11,14 @@ export default class UserService {
 
   constructor(loggerService: LoggerService) {
     this.loggerService = loggerService;
-    this.loggerService.logInfo(`UserController successfully initialized`);
+
+    this.loggerService.logInfo(`UserService successfully initialized`);
   }
-  getUser(): User {
-    return { name: "name", password: "password" };
+  async getUser(id: number): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve({ id, name: "name", password: "password" });
+      }, 1000);
+    });
   }
 }

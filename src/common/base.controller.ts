@@ -16,10 +16,14 @@ export default abstract class BaseController {
     this.loggerService = loggerService;
   }
 
+  get router() {
+    return this._router;
+  }
+
   protected bindRouts(route: IRoute[]): void {
     route.forEach((route: IRoute) => {
       const handler = route.func.bind(this);
-      this._router[route.method](route.path, route.func);
+      this.router[route.method](route.path, handler);
       this.loggerService.logInfo(
         `Route [${route.method}] ${route.path} successfully bound `,
       );
