@@ -2,19 +2,25 @@ import express, { Express } from "express";
 
 import UserController from "./user/user.controller";
 import LoggerService from "./logger/logger.service";
+import { ExceptionFilter } from "./error/exception.filter";
 
 export default class App {
   app: Express;
   port: number;
-  private userController: UserController;
-  private loggerService: LoggerService;
+  private readonly userController: UserController;
+  private readonly loggerService: LoggerService;
+  private readonly exceptionFilter: ExceptionFilter;
 
-  constructor(userController: UserController, loggerService: LoggerService) {
+  constructor(
+    UserController: UserController,
+    LoggerService: LoggerService,
+    ExceptionFilter: ExceptionFilter,
+  ) {
     this.port = 3000;
     this.app = express();
-    this.userController = userController;
-    this.loggerService = loggerService;
-
+    this.userController = UserController;
+    this.loggerService = LoggerService;
+    this.exceptionFilter = ExceptionFilter;
     this.loggerService.logInfo(`App successfully initialized`);
   }
 
@@ -27,5 +33,7 @@ export default class App {
 
   useRouter() {
     this.app.use("/user", this.userController.router);
+
+    this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 }

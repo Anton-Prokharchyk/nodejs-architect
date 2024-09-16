@@ -1,7 +1,9 @@
+import { NextFunction, Request, Response } from "express";
+
 import UserService, { User } from "./user.service";
 import LoggerService from "../logger/logger.service";
 import BaseController from "../common/base.controller";
-import { NextFunction, Request, Response } from "express";
+import { HttpError } from "../error/http-error.class";
 
 export default class UserController extends BaseController {
   userService: UserService;
@@ -12,7 +14,10 @@ export default class UserController extends BaseController {
 
     this.userService = userService;
     this.loggerService = loggerService;
-    this.bindRouts([{ path: "/:id", method: "get", func: this.getUser }]);
+    this.bindRouts([
+      { path: "/error", method: "get", func: this.getError },
+      { path: "/:id", method: "get", func: this.getUser },
+    ]);
 
     this.loggerService.logInfo(`UserController successfully initialized`);
   }
@@ -28,5 +33,8 @@ export default class UserController extends BaseController {
     res.send(user);
 
     return;
+  }
+  public getError(req: Request, res: Response, next: NextFunction): void {
+    throw new HttpError(404, "User not found", "UserController");
   }
 }
