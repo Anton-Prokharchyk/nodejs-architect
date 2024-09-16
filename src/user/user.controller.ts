@@ -1,6 +1,9 @@
+import { NextFunction, Request, Response } from "express";
+
 import UserService, { User } from "./user.service";
 import LoggerService from "../logger/logger.service";
 import BaseController from "../common/base.controller";
+import { HttpError } from "../error/http-error.class";
 
 export default class UserController extends BaseController {
   private userService: UserService;
@@ -14,5 +17,8 @@ export default class UserController extends BaseController {
   }
   public getUser(): User {
     return this.userService.getUser();
+  }
+  public getError(): void {
+    throw new HttpError(404, "User not found", "UserController");
   }
 }
