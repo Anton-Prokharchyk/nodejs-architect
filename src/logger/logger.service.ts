@@ -1,5 +1,8 @@
 import { Logger } from "tslog";
+import { injectable } from "inversify";
+import "reflect-metadata";
 
+@injectable()
 export default class LoggerService {
   logger: Logger<any>;
   constructor() {

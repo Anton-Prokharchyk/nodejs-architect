@@ -1,4 +1,9 @@
-import LoggerService from "../logger/logger.service";
+import { inject, injectable } from "inversify";
+import "reflect-metadata";
+
+import { TYPES } from "../types";
+import ILogger from "../logger/logger.interface";
+import IUserService from "./userService.itreface";
 
 export type User = {
   id: number;
@@ -6,13 +11,10 @@ export type User = {
   password: string;
 };
 
-export default class UserService {
-  private loggerService: LoggerService;
-
-  constructor(loggerService: LoggerService) {
-    this.loggerService = loggerService;
-
-    this.loggerService.logInfo(`UserService successfully initialized`);
+@injectable()
+export default class UserService implements IUserService {
+  constructor(@inject(TYPES.LoggerService) private LoggerService: ILogger) {
+    this.LoggerService.logInfo(`UserService successfully initialized`);
   }
   async getUser(id: number): Promise<unknown> {
     return new Promise((resolve, reject) => {
