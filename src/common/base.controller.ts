@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
-import LoggerService from "../logger/logger.service";
+import { injectable } from "inversify";
+import "reflect-metadata";
+
+import ILogger from "../logger/logger.interface";
 
 export interface IRoute {
   method: keyof Pick<Router, "get" | "post" | "put" | "delete" | "patch">;
@@ -7,13 +10,12 @@ export interface IRoute {
   func: (req: Request, res: Response, next: NextFunction) => void;
 }
 
+@injectable()
 export default abstract class BaseController {
   private readonly _router: Router;
-  protected loggerService: LoggerService;
 
-  protected constructor(loggerService: LoggerService) {
+  constructor(private loggerService: ILogger) {
     this._router = Router();
-    this.loggerService = loggerService;
   }
 
   get router() {

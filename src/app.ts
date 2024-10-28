@@ -1,39 +1,37 @@
 import express, { Express } from "express";
+import { inject, injectable } from "inversify";
+import "reflect-metadata";
 
-import UserController from "./user/user.controller";
-import LoggerService from "./logger/logger.service";
-import { ExceptionFilter } from "./error/exception.filter";
+import { TYPES } from "./types";
+import ILogger from "./logger/logger.interface";
+import IUserController from "./user/userController.interface";
+import { IExceptionFilter } from "./error/exception.filter.interface";
 
+@injectable()
 export default class App {
-  app: Express;
+  App: Express;
   port: number;
-  private readonly userController: UserController;
-  private readonly loggerService: LoggerService;
-  private readonly exceptionFilter: ExceptionFilter;
 
   constructor(
-    UserController: UserController,
-    LoggerService: LoggerService,
-    ExceptionFilter: ExceptionFilter,
+    @inject(TYPES.LoggerService) private LoggerService: ILogger,
+    @inject(TYPES.UserController) private UserController: IUserController,
+    @inject(TYPES.ExceptionFilter) private ExceptionFilter: IExceptionFilter,
   ) {
     this.port = 3000;
-    this.app = express();
-    this.userController = UserController;
-    this.loggerService = LoggerService;
-    this.exceptionFilter = ExceptionFilter;
-    this.loggerService.logInfo(`App successfully initialized`);
+    this.App = express();
+    this.LoggerService.logInfo(`App successfully initialized`);
   }
 
   init() {
-    this.app.listen(this.port, () =>
-      this.loggerService.logInfo(`Server started at ${this.port} port`),
+    this.App.listen(this.port, () =>
+      this.LoggerService.logInfo(`Server started at ${this.port} port`),
     );
     this.useRouter();
   }
 
   useRouter() {
-    this.app.use("/user", this.userController.router);
+    this.App.use("/user", this.UserController.router);
 
-    this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.App.use(this.ExceptionFilter.catch.bind(this.ExceptionFilter));
   }
 }
