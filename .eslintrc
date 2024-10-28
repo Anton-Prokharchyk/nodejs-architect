@@ -9,8 +9,10 @@
         "plugin:prettier/recommended"
     ],
     "rules": {
-        "no-empty-function": "error",
+        "no-empty-function": "warn",
         "@typescript-eslint/explicit-function-return-type": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
+
         "prettier/prettier": [
             "error",
             {

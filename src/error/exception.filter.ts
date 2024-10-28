@@ -14,7 +14,7 @@ export class ExceptionFilter implements IExceptionFilter {
 	catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction) {
 		if (error instanceof HttpError) {
 			this.LoggerService.logError(
-				`[${error.context}] Error : ${error.statusCode} ${error.message}`
+				`[${error.context}] Error : ${error.statusCode} ${error.message}`,
 			);
 			res.status(error.statusCode);
 			res.send(error.message);
