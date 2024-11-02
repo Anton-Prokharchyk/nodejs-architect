@@ -23,7 +23,7 @@ export default class App {
 		this.LoggerService.logInfo(`App successfully initialized`);
 	}
 
-	init() {
+	init(): void {
 		this.App.listen(this.port, () =>
 			this.LoggerService.logInfo(`Server started at ${this.port} port`),
 		);

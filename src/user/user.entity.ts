@@ -1,24 +1,33 @@
 import bcrypt from 'bcryptjs';
-import { HttpError } from '../error/http-error.class';
+
+import { getId } from '../utility/getId';
 
 const salt = 10;
 
 export class UserEntity {
 	private _password: string;
+	private readonly _id: string;
 	constructor(
 		private _email: string,
 		private _name: string,
 		password: string,
 	) {
-		this.setPassword(password).catch((err) => new HttpError(500, err.message));
+		this._password = bcrypt.hashSync(password, salt);
+		this._id = getId();
 	}
-	get _email(): string {
+	get email(): string {
 		return this._email;
 	}
-	get _name(): string {
+	get name(): string {
 		return this._name;
 	}
+	get id(): string {
+		return this._id;
+	}
+	get password(): string {
+		return this._password;
+	}
 	public async setPassword(pass: string): Promise<void> {
-		this._password = bcrypt.hash(pass, salt);
+		this._password = await bcrypt.hash(pass, salt);
 	}
 }
