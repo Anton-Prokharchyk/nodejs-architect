@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import bodyParser from 'body-parser';
 
 import { TYPES } from './types';
 import ILogger from './logger/logger.interface';
@@ -22,14 +23,19 @@ export default class App {
 		this.LoggerService.logInfo(`App successfully initialized`);
 	}
 
-	init() {
+	init(): void {
 		this.App.listen(this.port, () =>
 			this.LoggerService.logInfo(`Server started at ${this.port} port`),
 		);
+		this.useBodyParser();
 		this.useRouter();
 	}
 
-	useRouter() {
+	useBodyParser(): void {
+		this.App.use(bodyParser());
+	}
+
+	useRouter(): void {
 		this.App.use('/user', this.UserController.router);
 
 		this.App.use(this.ExceptionFilter.catch.bind(this.ExceptionFilter));
