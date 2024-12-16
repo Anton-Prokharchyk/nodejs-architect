@@ -19,9 +19,9 @@ export default class UserController extends BaseController implements IUserContr
 		super(LoggerService);
 
 		this.bindRouts([
-			{ path: '/error', method: 'get', func: this.getError },
-			{ path: '/:id', method: 'get', func: this.getUser },
-			{ path: '/registry', method: 'post', func: this.registry },
+			{ path: '/error', method: 'get', func: this.getError, middlewares: [] },
+			{ path: '/:id', method: 'get', func: this.getUser, middlewares: [] },
+			{ path: '/registry', method: 'post', func: this.registry, middlewares: [] },
 		]);
 
 		this.LoggerService.logInfo(`UserController successfully initialized`);
@@ -48,8 +48,8 @@ export default class UserController extends BaseController implements IUserContr
 			res.send(user);
 			return;
 		}
-		res.status(500);
-		res.end();
+		res.status(404);
+		res.end({ code: '404', message: 'User not found' });
 		return;
 	}
 	public getError(req: Request, res: Response, next: NextFunction): void {
