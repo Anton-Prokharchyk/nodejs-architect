@@ -9,6 +9,7 @@ import ILogger from '../logger/logger.interface';
 import IUserService from './userService.itreface';
 import IUserController from './userController.interface';
 import { UserRegisterDto } from './dto/userRegister.dto';
+import { ValidateMiddleware } from '../common/validate.middleware';
 
 @injectable()
 export default class UserController extends BaseController implements IUserController {
@@ -21,7 +22,12 @@ export default class UserController extends BaseController implements IUserContr
 		this.bindRouts([
 			{ path: '/error', method: 'get', func: this.getError, middlewares: [] },
 			{ path: '/:id', method: 'get', func: this.getUser, middlewares: [] },
-			{ path: '/registry', method: 'post', func: this.registry, middlewares: [] },
+			{
+				path: '/registry',
+				method: 'post',
+				func: this.registry,
+				middlewares: [new ValidateMiddleware(UserRegisterDto)],
+			},
 		]);
 
 		this.LoggerService.logInfo(`UserController successfully initialized`);
