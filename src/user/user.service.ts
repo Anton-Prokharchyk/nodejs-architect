@@ -6,7 +6,6 @@ import ILogger from '../logger/logger.interface';
 import IUserService from './userService.itreface';
 import { UserEntity } from './user.entity';
 import { UserRegisterDto } from './dto/userRegister.dto';
-import ConfigService from '../config/config.service';
 import IConfigService from '../config/config.service.interface';
 
 @injectable()
