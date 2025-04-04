@@ -6,7 +6,7 @@ import BaseController from '../common/base.controller';
 import { HttpError } from '../error/http-error.class';
 import { TYPES } from '../types';
 import ILogger from '../logger/logger.interface';
-import IUserService from './userService.itreface';
+import IUserService from './user.service.itreface';
 import IUserController from './userController.interface';
 import { UserRegisterDto } from './dto/userRegister.dto';
 import { ValidateMiddleware } from '../common/validate.middleware';
@@ -39,10 +39,7 @@ export default class UserController extends BaseController implements IUserContr
 		if (!newUser) res.status(400).send({ message: 'Bad request' });
 		if (newUser)
 			res.status(200).send({
-				id: newUser.id,
-				name: newUser.name,
-				email: newUser.email,
-				password: newUser.password,
+				newUser,
 			});
 	}
 	async getUser(req: Request, res: Response, next: NextFunction): Promise<void> {

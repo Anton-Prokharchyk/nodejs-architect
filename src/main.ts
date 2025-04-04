@@ -7,13 +7,15 @@ import LoggerService from './logger/logger.service';
 import ILogger from './logger/logger.interface';
 import UserController from './user/user.controller';
 import UserService from './user/user.service';
-import IUserService from './user/userService.itreface';
+import IUserService from './user/user.service.itreface';
 import { ExceptionFilter } from './error/exception.filter';
 import { IExceptionFilter } from './error/exception.filter.interface';
 import IUserController from './user/userController.interface';
 import IConfigService from './config/config.service.interface';
 import ConfigService from './config/config.service';
 import { PrismaService } from './database/prisma.service';
+import UserRepository from './user/user.repository';
+import IUserRepository from './user/user.repository.interface';
 
 const AppBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ILogger>(TYPES.LoggerService).to(LoggerService).inSingletonScope();
@@ -22,6 +24,7 @@ const AppBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IUserController>(TYPES.UserController).to(UserController).inSingletonScope();
 	bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
 	bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
+	bind<IUserRepository>(TYPES.UserRepository).to(UserRepository).inSingletonScope();
 	bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
 
