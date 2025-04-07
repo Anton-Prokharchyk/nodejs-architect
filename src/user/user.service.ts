@@ -9,6 +9,7 @@ import { UserRegisterDto } from './dto/userRegister.dto';
 import IConfigService from '../config/config.service.interface';
 import IUserRepository from './user.repository.interface';
 import { UserModel } from '@prisma/client';
+import UserLoginDto from './dto/userLogin.dto';
 
 @injectable()
 export default class UserService implements IUserService {
@@ -24,18 +25,22 @@ export default class UserService implements IUserService {
 		const isUserExist = await this.UserRepository.find(email);
 		if (!isUserExist) {
 			const salt = Number(this.ConfigService.getKey('SALT'));
-			const newUser = new UserEntity(salt, email, name, password);
+			const newUser = new UserEntity(email, name, password);
+			await newUser.setPassword(newUser.password, salt);
 			return this.UserRepository.create(newUser);
 		} else {
 			return null;
 		}
 	}
 
-	async validateUser(dto: UserRegisterDto): Promise<boolean> {
-		const existUser = await this.UserRepository.find(dto.email);
-		if (!existUser) return false;
-
-		return false;
+	async validateUser(user: UserLoginDto): Promise<boolean> {
+		const existUser = await this.UserRepository.find(user.email);
+		if (!existUser) {
+			return false;
+		} else {
+			const userEntity = new UserEntity(existUser.name, existUser.email, existUser.password);
+			return await userEntity.comparePassword(user.password);
+		}
 	}
 
 	async getAllUsers(): Promise<Array<UserModel>> {

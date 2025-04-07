@@ -18,9 +18,8 @@ export default class UserRepository implements IUserRepository {
 	async find(email: string): Promise<UserModel | null> {
 		return this.PrismaService.client.userModel.findFirst({ where: { email } });
 	}
+
 	async findAll(): Promise<Array<UserModel>> {
-		const users = this.PrismaService.client.userModel.findMany();
-		console.log('all users', users);
-		return users;
+		return this.PrismaService.client.userModel.findMany();
 	}
 }

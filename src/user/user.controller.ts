@@ -24,7 +24,6 @@ export default class UserController extends BaseController implements IUserContr
 		this.bindRouts([
 			{ path: '/error', method: 'get', func: this.getError, middlewares: [] },
 			{ path: '/getAll', method: 'get', func: this.getAllUsers, middlewares: [] },
-			{ path: '/:id', method: 'get', func: this.getUser, middlewares: [] },
 			{
 				path: '/registry',
 				method: 'post', //
@@ -37,6 +36,7 @@ export default class UserController extends BaseController implements IUserContr
 				func: this.login,
 				middlewares: [new ValidateMiddleware(UserLoginDto)],
 			},
+			{ path: '/:id', method: 'get', func: this.getUser, middlewares: [] },
 		]);
 
 		this.LoggerService.logInfo(`UserController successfully initialized`);
@@ -61,7 +61,11 @@ export default class UserController extends BaseController implements IUserContr
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const { email, password } = req.body;
+		const isValid = await this.UserService.validateUser(req.body);
+		res.status(200);
+		res.setHeader('Content-Type', 'application/json');
+		res.send({ isLogged: isValid });
+		return;
 	}
 
 	async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
