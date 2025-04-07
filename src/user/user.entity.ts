@@ -1,32 +1,24 @@
-import bcrypt from 'bcryptjs';
-
-import { getId } from '../utility/getId';
+import { hash, compare } from 'bcryptjs';
 
 export class UserEntity {
-	private _password: string;
-	private readonly _id: string;
 	constructor(
-		private salt: number,
 		private _email: string,
 		private _name: string,
-		password: string,
-	) {
-		this._password = bcrypt.hashSync(password, salt);
-		this._id = getId();
-	}
+		private _password: string,
+	) {}
 	get email(): string {
 		return this._email;
 	}
 	get name(): string {
 		return this._name;
 	}
-	get id(): string {
-		return this._id;
-	}
 	get password(): string {
 		return this._password;
 	}
-	public async setPassword(pass: string): Promise<void> {
-		this._password = await bcrypt.hash(pass, this.salt);
+	public async setPassword(pass: string, salt: number): Promise<void> {
+		this._password = await hash(pass, salt);
+	}
+	public async comparePassword(pass: string): Promise<boolean> {
+		return compare(pass, this._password);
 	}
 }
