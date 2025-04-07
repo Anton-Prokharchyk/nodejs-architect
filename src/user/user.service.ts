@@ -31,6 +31,17 @@ export default class UserService implements IUserService {
 		}
 	}
 
+	async validateUser(dto: UserRegisterDto): Promise<boolean> {
+		const existUser = await this.UserRepository.find(dto.email);
+		if (!existUser) return false;
+
+		return false;
+	}
+
+	async getAllUsers(): Promise<Array<UserModel>> {
+		return await this.UserRepository.findAll();
+	}
+
 	async getUserById(id: number): Promise<UserRegisterDto | null> {
 		return await new Promise((resolve) => {
 			setTimeout(() => {

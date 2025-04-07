@@ -5,4 +5,6 @@ import { UserRegisterDto } from './dto/userRegister.dto';
 export default interface IUserService {
 	getUserById(id: number): Promise<UserRegisterDto | null>;
 	createUser(dto: UserRegisterDto): Promise<UserModel | null>;
+	getAllUsers(): Promise<Array<UserModel>>;
+	validateUser(dto: UserRegisterDto): Promise<boolean>;
 }
