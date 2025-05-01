@@ -11,7 +11,7 @@ import { TYPES } from '../types';
 export class ExceptionFilter implements IExceptionFilter {
 	constructor(@inject(TYPES.LoggerService) private LoggerService: ILogger) {}
 
-	catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction) {
+	catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction): void {
 		if (error instanceof HttpError) {
 			this.LoggerService.logError(
 				`[${error.context}] Error : ${error.statusCode} ${error.message}`,
