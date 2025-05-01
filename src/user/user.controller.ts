@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import { sign } from 'jsonwebtoken';
+import { UserModel } from '@prisma/client';
 
 import BaseController from '../common/base.controller';
 import { HttpError } from '../error/http-error.class';
@@ -11,13 +13,15 @@ import IUserController from './userController.interface';
 import { UserRegisterDto } from './dto/userRegister.dto';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import UserLoginDto from './dto/userLogin.dto';
-import { UserModel } from '@prisma/client';
+import IConfigService from '../config/config.service.interface';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export default class UserController extends BaseController implements IUserController {
 	constructor(
 		@inject(TYPES.LoggerService) private LoggerService: ILogger,
 		@inject(TYPES.UserService) private UserService: IUserService,
+		@inject(TYPES.ConfigService) private ConfigService: IConfigService,
 	) {
 		super(LoggerService);
 
@@ -36,7 +40,7 @@ export default class UserController extends BaseController implements IUserContr
 				func: this.login,
 				middlewares: [new ValidateMiddleware(UserLoginDto)],
 			},
-			{ path: '/:id', method: 'get', func: this.getUser, middlewares: [] },
+			{ path: '/:id', method: 'get', func: this.getUser, middlewares: [new AuthGuard()] },
 		]);
 
 		this.LoggerService.logInfo(`UserController successfully initialized`);
@@ -50,10 +54,15 @@ export default class UserController extends BaseController implements IUserContr
 		const { email, name, password } = req.body;
 		const newUser = await this.UserService.createUser({ email, name, password });
 		if (!newUser) res.status(400).send({ message: 'Bad request' });
-		if (newUser)
+		if (newUser) {
+			const secret = this.ConfigService.getKey('SECRET');
+			let token;
+			if (secret) token = await this.signJWT(newUser.email, secret);
 			res.status(200).send({
 				newUser,
+				token,
 			});
+		}
 	}
 
 	async login(
@@ -97,5 +106,19 @@ export default class UserController extends BaseController implements IUserContr
 
 	public getError(req: Request, res: Response, next: NextFunction): void {
 		throw new HttpError(404, 'User not found', 'UserController');
+	}
+
+	private async signJWT(email: string, secret: string): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
+			sign(
+				{ email, iat: Math.floor(Date.now() / 1000) },
+				secret,
+				{ algorithm: 'HS256' },
+				(error, token) => {
+					if (error) reject(error);
+					if (token) resolve(token);
+				},
+			);
+		});
 	}
 }

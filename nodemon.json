@@ -4,5 +4,5 @@
     ],
     "ext": "ts,json",
     "ignore":[ "src/**/*.spec.ts"],
-    "exec":"ts-node ./src/main.ts"
+    "exec":"ts-node --files ./src/main.ts"
 }
