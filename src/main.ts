@@ -10,7 +10,7 @@ import UserService from './user/user.service';
 import IUserService from './user/user.service.itreface';
 import { ExceptionFilter } from './error/exception.filter';
 import { IExceptionFilter } from './error/exception.filter.interface';
-import IUserController from './user/userController.interface';
+import IUserController from './user/user.controller.interface';
 import IConfigService from './config/config.service.interface';
 import ConfigService from './config/config.service';
 import { PrismaService } from './database/prisma.service';
@@ -28,12 +28,17 @@ const AppBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
 
-const bootstrap = () => {
-	const AppContainer = new Container();
-	AppContainer.load(AppBindings);
-	const server = AppContainer.get<App>(TYPES.Application);
-	server.init();
-	return { server, AppContainer };
+interface IBootstrapReturn {
+	app: App;
+	appContainer: Container;
+}
+
+const bootstrap = async (): Promise<IBootstrapReturn> => {
+	const appContainer = new Container();
+	appContainer.load(AppBindings);
+	const app = appContainer.get<App>(TYPES.Application);
+	await app.init();
+	return { app, appContainer };
 };
 
-export const { server, AppContainer } = bootstrap();
+export const boot = bootstrap();

@@ -1,20 +1,22 @@
-import express, { Express } from 'express';
-import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import express, { Express } from 'express';
+import { Server } from 'http';
+import { inject, injectable } from 'inversify';
 import bodyParser from 'body-parser';
 
 import { TYPES } from './types';
 import ILogger from './logger/logger.interface';
-import IUserController from './user/userController.interface';
+import IUserController from './user/user.controller.interface';
+import IConfigService from './config/config.service.interface';
 import { IExceptionFilter } from './error/exception.filter.interface';
 import { PrismaService } from './database/prisma.service';
 import { AuthMiddleware } from './common/auth.middleware';
-import IConfigService from './config/config.service.interface';
 
 @injectable()
 export default class App {
 	App: Express;
 	port: number;
+	server: Server;
 
 	constructor(
 		@inject(TYPES.LoggerService) private LoggerService: ILogger,
@@ -28,11 +30,11 @@ export default class App {
 		this.LoggerService.logInfo(`App successfully initialized`);
 	}
 
-	init(): void {
-		this.App.listen(this.port, () =>
+	async init(): Promise<void> {
+		this.server = this.App.listen(this.port, () =>
 			this.LoggerService.logInfo(`Server started at ${this.port} port`),
 		);
-		this.PrismaService.connect();
+		await this.PrismaService.connect();
 		this.useMiddlewares();
 		this.useRouter();
 		this.useExceptionFilters();
@@ -53,5 +55,8 @@ export default class App {
 
 	useRouter(): void {
 		this.App.use('/user', this.UserController.router);
+	}
+	public close(): void {
+		this.server.close();
 	}
 }

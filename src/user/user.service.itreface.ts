@@ -8,4 +8,5 @@ export default interface IUserService {
 	createUser(dto: UserRegisterDto): Promise<UserModel | null>;
 	getAllUsers(): Promise<Array<UserModel>>;
 	validateUser(dto: UserLoginDto): Promise<boolean>;
+	deleteUser(email: string): Promise<UserModel | null>;
 }
