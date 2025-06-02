@@ -20,6 +20,7 @@ export default class UserService implements IUserService {
 	) {
 		this.LoggerService.logInfo(`UserService successfully initialized`);
 	}
+
 	async createUser(dto: UserRegisterDto): Promise<UserModel | null> {
 		const { email, name, password } = dto;
 		const isUserExist = await this.UserRepository.find(email);
@@ -45,6 +46,10 @@ export default class UserService implements IUserService {
 
 	async getAllUsers(): Promise<Array<UserModel>> {
 		return await this.UserRepository.findAll();
+	}
+
+	async deleteUser(email: string): Promise<UserModel | null> {
+		return await this.UserRepository.delete(email);
 	}
 
 	async getUserById(id: number): Promise<UserRegisterDto | null> {

@@ -8,4 +8,6 @@ export default interface IUserRepository {
 	find: (email: string) => Promise<UserModel | null>;
 
 	findAll: () => Promise<Array<UserModel>>;
+
+	delete: (email: string) => Promise<UserModel | null>;
 }

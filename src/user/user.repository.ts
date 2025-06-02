@@ -22,4 +22,14 @@ export default class UserRepository implements IUserRepository {
 	async findAll(): Promise<Array<UserModel>> {
 		return this.PrismaService.client.userModel.findMany();
 	}
+
+	async delete(email: string): Promise<UserModel | null> {
+		try {
+			return await this.PrismaService.client.userModel.delete({
+				where: { email },
+			});
+		} catch (e) {
+			return null;
+		}
+	}
 }

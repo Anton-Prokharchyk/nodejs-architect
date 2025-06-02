@@ -9,7 +9,7 @@ import { HttpError } from '../error/http-error.class';
 import { TYPES } from '../types';
 import ILogger from '../logger/logger.interface';
 import IUserService from './user.service.itreface';
-import IUserController from './userController.interface';
+import IUserController from './user.controller.interface';
 import { UserRegisterDto } from './dto/userRegister.dto';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import UserLoginDto from './dto/userLogin.dto';
@@ -28,9 +28,10 @@ export default class UserController extends BaseController implements IUserContr
 		this.bindRouts([
 			{ path: '/error', method: 'get', func: this.getError, middlewares: [] },
 			{ path: '/getAll', method: 'get', func: this.getAllUsers, middlewares: [] },
+			{ path: '/delete', method: 'post', func: this.deleteUser, middlewares: [] },
 			{
 				path: '/registry',
-				method: 'post', //
+				method: 'post',
 				func: this.registry,
 				middlewares: [new ValidateMiddleware(UserRegisterDto)],
 			},
@@ -63,6 +64,21 @@ export default class UserController extends BaseController implements IUserContr
 				token,
 			});
 		}
+		return;
+	}
+
+	async deleteUser(
+		req: Request<{}, {}, { email: string }>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const { email } = req.body;
+		const deletedUser = await this.UserService.deleteUser(email);
+		if (!deletedUser) res.status(404).send({ message: 'Bad request' });
+		if (deletedUser) {
+			res.status(200).send({ deletedUser });
+		}
+		return;
 	}
 
 	async login(
@@ -70,10 +86,17 @@ export default class UserController extends BaseController implements IUserContr
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
+		let token;
 		const isValid = await this.UserService.validateUser(req.body);
-		res.status(200);
-		res.setHeader('Content-Type', 'application/json');
-		res.send({ isLogged: isValid });
+		if (isValid) {
+			const secret = this.ConfigService.getKey('SECRET');
+			if (secret) token = await this.signJWT(req.body.email, secret);
+			res.status(200);
+			res.setHeader('Content-Type', 'application/json');
+		} else {
+			res.status(422);
+		}
+		res.send({ isLogged: isValid, token });
 		return;
 	}
 
